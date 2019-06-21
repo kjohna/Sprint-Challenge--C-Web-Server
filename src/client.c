@@ -76,15 +76,19 @@ int send_request(int fd, char *hostname, char *port, char *path)
   char request[max_request_size];
   int rv;
 
-  sprintf(request,
-          "GET /%s HTTP/1.1\r\n"
-          "Host: %s:%s\r\n"
-          "Connection: close\r\n"
-          "\r\n",
-          path, hostname, port);
+  // construct request
+  int request_length =
+      sprintf(request,
+              "GET /%s HTTP/1.1\r\n"
+              "Host: %s:%s\r\n"
+              "Connection: close\r\n"
+              "\r\n",
+              path, hostname, port);
   printf("request: \n%s-\n", request);
+  // send it!
+  rv = send(fd, request, request_length, 0);
 
-  return 0;
+  return rv;
 }
 
 int main(int argc, char *argv[])
@@ -116,7 +120,15 @@ int main(int argc, char *argv[])
   if (sockfd > 0)
   {
     // call send_request (constructs and send the request);
-    send_request(sockfd, parsed_url->hostname, parsed_url->port, parsed_url->path);
+    int rv = send_request(sockfd, parsed_url->hostname, parsed_url->port, parsed_url->path);
+
+    if (rv > 0)
+    {
+      while ((numbytes = recv(sockfd, buf, BUFSIZE - 1, 0)) > 0)
+      {
+        printf("%s", buf);
+      }
+    }
   }
 
   free(parsed_url);

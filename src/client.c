@@ -76,9 +76,13 @@ int send_request(int fd, char *hostname, char *port, char *path)
   char request[max_request_size];
   int rv;
 
-  ///////////////////
-  // IMPLEMENT ME! //
-  ///////////////////
+  sprintf(request,
+          "GET /%s HTTP/1.1\r\n"
+          "Host: %s:%s\r\n"
+          "Connection: close\r\n"
+          "\r\n",
+          path, hostname, port);
+  printf("request: \n%s-\n", request);
 
   return 0;
 }
@@ -106,6 +110,14 @@ int main(int argc, char *argv[])
   // note: malloc's a urlinfo_t
   urlinfo_t *parsed_url = parse_url(argv[1]);
   printf("hostname: %s \nport: %s\npath: %s\n", parsed_url->hostname, parsed_url->port, parsed_url->path);
+
+  // initialize a socket
+  sockfd = get_socket(parsed_url->hostname, parsed_url->port);
+  if (sockfd > 0)
+  {
+    // call send_request (constructs and send the request);
+    send_request(sockfd, parsed_url->hostname, parsed_url->port, parsed_url->path);
+  }
 
   free(parsed_url);
 

@@ -53,7 +53,7 @@ urlinfo_t *parse_url(char *url)
     // TODO: other stuff with http/https info?
     // move hostname pointer to start after final "/"
     hostname = dbl_slash + 2;
-    printf("HERE: %s", hostname);
+    // printf("HERE: %s", hostname);s
   }
   // find the first slash in the URL (beyond http...)
   char *first_slash = strchr(hostname, *"/");
@@ -147,6 +147,18 @@ int main(int argc, char *argv[])
       printf("response: \n----------\n");
       while ((numbytes = recv(sockfd, buf, BUFSIZE - 1, 0)) > 0)
       {
+        // check for redirect
+        if(strstr(buf, "HTTP/1.1 301")) {
+          // get new location:
+          char *new_loc = strcasestr(buf, "Location:");
+          char new_url[1024];
+          sscanf(new_loc, "%*s %s", new_url);
+          printf("REDIRECT--new_url: %s\n", new_url);
+          char *new_args[2];
+          new_args[1] = new_url;
+          main(2, new_args);
+          return 0;
+        }
         printf("%s", buf);
       }
       printf("\n----------\n");

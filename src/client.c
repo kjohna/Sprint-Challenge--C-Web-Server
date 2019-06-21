@@ -84,7 +84,7 @@ int send_request(int fd, char *hostname, char *port, char *path)
               "Connection: close\r\n"
               "\r\n",
               path, hostname, port);
-  printf("request: \n%s-\n", request);
+  printf("----------\nrequest: \n----------\n%s----------\n", request);
   // send it!
   rv = send(fd, request, request_length, 0);
 
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
   // parse URL
   // note: malloc's a urlinfo_t
   urlinfo_t *parsed_url = parse_url(argv[1]);
-  printf("hostname: %s \nport: %s\npath: %s\n", parsed_url->hostname, parsed_url->port, parsed_url->path);
+  // printf("hostname: %s \nport: %s\npath: %s\n", parsed_url->hostname, parsed_url->port, parsed_url->path);
 
   // initialize a socket
   sockfd = get_socket(parsed_url->hostname, parsed_url->port);
@@ -124,10 +124,12 @@ int main(int argc, char *argv[])
 
     if (rv > 0)
     {
+      printf("response: \n----------\n");
       while ((numbytes = recv(sockfd, buf, BUFSIZE - 1, 0)) > 0)
       {
         printf("%s", buf);
       }
+      printf("\n----------\n");
     }
   }
 

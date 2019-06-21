@@ -49,9 +49,19 @@ urlinfo_t *parse_url(char *url)
   char *first_slash = strchr(hostname, *"/");
   path = first_slash + 1;
   *first_slash = *"\0";
+  // see if port is specified
   char *first_colon = strchr(hostname, *":");
-  port = first_colon + 1;
-  *first_colon = *"\0";
+  if (first_colon)
+  {
+    // found a colon, port should be right after
+    port = first_colon + 1;
+    *first_colon = *"\0";
+  }
+  else
+  {
+    // no colon, assume port 80
+    port = "80";
+  }
 
   urlinfo->hostname = hostname;
   urlinfo->port = port;
